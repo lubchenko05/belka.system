@@ -3,7 +3,7 @@ import telebot
 import settings
 import codecs
 
-help_text = codecs.open( "templates/help.md", "r", "utf_8_sig" ).read()
+help_text = codecs.open("templates/help.md", "r", "utf_8_sig" ).read()
 
 bot = telebot.TeleBot(settings.TOKEN)
 
