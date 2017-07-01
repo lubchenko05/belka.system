@@ -32,6 +32,8 @@ class User:
         try:
             db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'User')
             data = db.get(param_name, param_value)
+            if (data == None):
+                return None
             is_staff = 'True' is data['is_staff']
             return User(data['id'], data['first_name'], data['last_name'], data['phone'], data['chat_id'], data['username'], is_staff)
         except sqlite3.Error as e:

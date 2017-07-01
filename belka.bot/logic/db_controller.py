@@ -43,6 +43,8 @@ class DbController:
             c = conn.cursor().execute(f'SELECT * FROM {self.table} WHERE {param_name}={param_value};')
             headers = c.description
             values = c.fetchone()
+            if (values == None):
+                return None
             result={}
             for k,v in zip(headers,values):
                 result[k[0]] = v
