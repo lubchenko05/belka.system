@@ -21,8 +21,8 @@ class User:
         try:
             db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'User')
             id_ = db.create(first_name=first_name, last_name=last_name, phone=phone,
-                            chat_id=chat_id, username=username, is_staff=False)
-            return User(id_, first_name, last_name, phone, chat_id, username, False)
+                            chat_id=chat_id, username=username, is_staff = 0)
+            return User(id_, first_name, last_name, phone, chat_id, username, 0)
         except sqlite3.Error as e:
             print(e)
         return None
@@ -34,7 +34,7 @@ class User:
             data = db.get(param_name, param_value)
             if (data == None):
                 return None
-            is_staff = 'True' is data['is_staff']
+            is_staff = data['is_staff']
             return User(data['id'], data['first_name'], data['last_name'], data['phone'], data['chat_id'], data['username'], is_staff)
         except sqlite3.Error as e:
             print(e)
@@ -66,13 +66,13 @@ class User:
 
     def get_events(self):
         try:
-            events = self.__db.query(f'SELECT * from Event JOIN EventToUser ON Event.id = EventToUser.event_id WHERE '
-                                     f'EventToUser.user_id={self._id};')
-            print(events)
+            db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'User')
+            events = db.query(f'SELECT * from Event JOIN EventToUser ON Event.id = EventToUser.event_id WHERE '
+                                     f'EventToUser.user_id=\'{self._id}\';')
+            #print(events)
             event_list = []
             for data in events:
-                event_list.append(Event(data['id'], data['name'], data['description'], data['photo'], data['date'],
-                                        data['time']))
+                event_list.append(Event(data[0], data[1], data[2], data[3], data[4], data[5]))
             return event_list
         except sqlite3.Error as e:
             print(e)
@@ -90,7 +90,7 @@ class User:
     def decline_event(self, event_id):
         db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'EventToUser')
         try:
-            db.query(f'DELETE FROM {db.table} WHERE event_id={event_id} and user_id = {self._id};')
+            db.query(f'DELETE FROM {db.table} WHERE event_id=\'{event_id}\' and user_id = \'{self._id}\';')
             return True
         except sqlite3.Error as e:
             print(e)

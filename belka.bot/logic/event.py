@@ -12,8 +12,10 @@ class Event:
         self.title = title
         self.description = description
         self.photo = photo
-        self.date = datetime.date(*date.split('.'))
-        self.time = datetime.time(*[int(i) for i in time.split(':')])
+        #self.date = datetime(*[int(i) for i in date.split('.')])
+        #self.time = datetime.time(*[int(i) for i in time.split(':')])
+        self.date = date
+        self.time = time
         self.__db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'Event')
 
     @staticmethod
@@ -31,8 +33,7 @@ class Event:
         try:
             db = DbController(os.path.join(os.getcwd(), '..', 'db.sqlite3'), 'Event')
             data = db.get(param_name, param_value)
-            return Event(data['id'], data['name'], data['description'], data['photo'], data['date'],
-                         data['time'])
+            return Event(data['id'], data['name'], data['description'], data['photo'], data['date'], data['time'])
         except sqlite3.Error as e:
             print(e)
         return None
@@ -48,8 +49,7 @@ class Event:
             events = db.query(command)
             event_list = []
             for data in events:
-                event_list.append(Event(data['id'], data['name'], data['description'], data['photo'], data['date'],
-                                        data['time']))
+                event_list.append(Event(data[0], data[1], data[2], data[3], data[4], data[5]))
 
             return event_list
         except sqlite3.Error as e:
