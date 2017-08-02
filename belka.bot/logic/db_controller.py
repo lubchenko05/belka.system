@@ -40,7 +40,7 @@ class DbController:
 
     def get(self, param_name, param_value):
         with sqlite3.connect(self.db) as conn:
-            c = conn.cursor().execute(f'SELECT * FROM {self.table} WHERE {param_name}={param_value};')
+            c = conn.cursor().execute(f'SELECT * FROM {self.table} WHERE `{param_name}`=\'{param_value}\';')
             headers = c.description
             values = c.fetchone()
             if (values == None):

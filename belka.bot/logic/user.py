@@ -47,7 +47,7 @@ class User:
             users = db.all(param_name, param_value)
             user_list = []
             for data in users:
-                is_staff = 'True' is data['is_staff']
+                is_staff = data['is_staff']
                 user_list.append(User(data['id'], data['first_name'], data['last_name'], data['phone'], data['chat_id'],
                                  data['username'], is_staff))
             return user_list
