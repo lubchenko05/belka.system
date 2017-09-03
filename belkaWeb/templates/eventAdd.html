@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Belka Bot Admin</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="/static/dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="/static/dist/css/skins/skin-yellow.css">
+
+  <link rel="stylesheet" href="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+  <link rel="stylesheet" href="/static/plugins/timepicker/bootstrap-timepicker.min.css">
+  <link rel="stylesheet" href="/static/plugins/datepicker/datepicker3.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="hold-transition skin-yellow sidebar-mini">
+<div class="wrapper">
+  <header class="main-header">
+    <a href="#" class="logo">
+      <span class="logo-mini"><b>B</b>Bot</span>
+      <span class="logo-lg"><b>Belka</b> Bot</span>
+    </a>
+    <nav class="navbar navbar-static-top" role="navigation">
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+    </nav>
+  </header>
+
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="/static/img/avatar/{{ username }}.png" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p>{{ username }}</p>
+        </div>
+      </div>
+{% include 'menu.html' %}
+      <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>
+        <a href="/events"><i class="fa fa-arrow-left"></i></a> Добавить мероприятие
+      </h1>
+    </section>
+
+ <section class="content">
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header with-border">
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <form class="form-horizontal" action="/EventAddNew" method="POST">
+                <div class="form-group">
+                  <div class="col-sm-12">
+                    <label for="eventTitle" class="control-label">Заголовок</label>
+                    <input class="form-control" id="eventTitle" placeholder="Title" name="title" />
+                    <label for="eventDescriptionShort" class="control-label">Описание короткое</label>
+                    <textarea class="form-control" id="eventDescriptionShort" placeholder="Описание короткое..." name="descriptionshort" rows="1" style="width: 100%; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                    <label for="eventDescription" class="control-label">Описание полное</label>
+                    <textarea class="form-control textarea" id="eventDescription" placeholder="Описание полное..." name="description" rows="3" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                    <label for="eventDate" class="control-label">Дата</label>
+                    <input type="text" class="form-control" id="eventDate" name="date" />
+                    <label for="eventTime" class="control-label">Время</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="eventTime" name="time" />
+                      <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                      </div>
+                    </div>
+                    <label for="eventImage">Изображение</label>
+                    <input id="eventImage" name="image" type="file">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+</div>
+<!-- ./wrapper -->
+
+<script src="/static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/dist/js/app.min.js"></script>
+<script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script src="/static/plugins/datepicker/bootstrap-datepicker.js"></script>
+<script src="/static/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+<script>
+  $(function () {
+    $(".textarea").wysihtml5();
+  });
+      //Timepicker
+    $("#eventTime").timepicker({
+        minuteStep: 1,
+        showSeconds: true,
+        showMeridian: false,
+        defaultTime: false
+    });
+        //Date picker
+    $('#eventDate').datepicker({
+      format: 'dd.mm.yyyy',
+      autoclose: true
+    });
+</script>
+</body>
+</html>
