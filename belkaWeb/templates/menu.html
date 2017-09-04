@@ -1,0 +1,18 @@
+	<ul class="sidebar-menu">
+        <li {% if request.path=="/" %}class="active"{% endif %}>
+        	<a href="/"><i class="fa fa-dashboard"></i> <span>Главная</span></a>
+        </li>
+        <li {% if request.path=="/users" %}class="active"{% endif %}>
+        	<a href="/users"><i class="fa fa-users"></i> <span>Пользователи</span></a>
+        </li>
+        <li {% if request.path=="/events" %}class="active"{% endif %}>
+        	<a href="/events"><i class="fa fa-calendar"></i> <span>Мероприятия</span></a>
+        </li>
+        <li {% if request.path=="/sendtoall" %}class="active"{% endif %}>
+        	<a href="/sendtoall"><i class="fa fa-bell"></i> <span>Оповещения</span></a>
+        </li>
+        <li {% if request.path=="/logout" %}class="active"{% endif %}>
+        	<a href="/logout"><i class="fa fa-sign-out"></i> <span>Выход</span></a>
+        </li>
+      </ul>
+      
