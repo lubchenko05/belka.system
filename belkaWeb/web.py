@@ -5,7 +5,7 @@ import urllib.request
 import os.path
 from hashlib import sha256
 from flask import Flask, render_template, session, redirect, url_for, escape, request, jsonify
-
+import settings
 
 from logic.user import User
 from logic.event import Event
@@ -13,13 +13,13 @@ from logic.event import Event
 global hashs_for_users
 hashs_for_users = {}
 
-TOKEN = '386962862:AAEJu5utZL-herHkyxVyVa9_YyNkf3bLMvo'
+
 
 bot = telebot.TeleBot(TOKEN)
 
 web = Flask(__name__)
 
-web.secret_key = '6579af11e0922f02be35da90481274b93fc9b26c6c8a9602f34c6437'
+web.secret_key = WEBSECRET
 web.config['SESSION_TYPE'] = 'memcache'
 
 def render_main_page(username):
