@@ -74,11 +74,11 @@
                   <td>{{ user.phone }}</td>
                   <td>
                     <div class="btn-group">
-                      <a class="btn btn-danger btn-xs" onclick="$.ajax({url: '/UserDelete', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-ban"></i></a>
+                      <a class="btn btn-danger btn-xs" onclick="$.ajax({url: '/api/UserDelete', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-ban"></i></a>
                       {% if user.is_staff == 0 %}
-                      <a class="btn btn-warning btn-xs" onclick="$.ajax({url: '/UserAddStaff', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-coffee"></i></a>
+                      <a class="btn btn-warning btn-xs" onclick="$.ajax({url: '/api/UserAddStaff', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-coffee"></i></a>
                       {% else %}
-                      <a class="btn btn-success btn-xs" onclick="$.ajax({url: '/UserDelStaff', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-user"></i></a>
+                      <a class="btn btn-success btn-xs" onclick="$.ajax({url: '/api/UserDelStaff', data: 'chat_id={{ user.chat_id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-user"></i></a>
                       {% endif %}
                     </div>
                   </td>

@@ -1,8 +1,10 @@
 import os
 import psycopg2
+from settings import *
+
 
 class DbController:
-    def __init__(self, table, host="192.168.88.90", db="belka-bot", username="belka-bot", password='123456', port="5432"):
+    def __init__(self, table, host=DBHOST, db=DBBASE, username=DBUSER, password=DBPASS, port=DBPORT):
         self.host = host
         self.username = username
         self.password = password

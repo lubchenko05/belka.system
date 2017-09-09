@@ -74,8 +74,8 @@
                   <td>{{ event.time }}</td>
                   <td>
                     <div class="btn-group">
-                      <a class="btn btn-danger btn-xs" onclick="$.ajax({url: '/EventDelete', data: 'id={{ event._id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-ban"></i></a>
-                      <a class="btn btn-warning btn-xs" onclick="$.ajax({url: '/EventEdit', data: 'id={{ event._id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-pencil"></i></a>
+                      <a class="btn btn-danger btn-xs" onclick="$.ajax({url: '/api/EventDelete', data: 'id={{ event._id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-ban"></i></a>
+                      <a class="btn btn-warning btn-xs" onclick="$.ajax({url: '/api/EventEdit', data: 'id={{ event._id }}', success: function(){ window.location.reload(); }, type: 'GET'});"><i class="fa fa-pencil"></i></a>
                     </div>
                   </td>
                 </tr>
