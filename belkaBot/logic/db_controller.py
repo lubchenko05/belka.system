@@ -1,5 +1,7 @@
 import os
 import psycopg2
+from settings import *
+
 
 class DbController:
     def __init__(self, table, host=DBHOST, db=DBBASE, username=DBUSER, password=DBPASS, port=DBPORT):

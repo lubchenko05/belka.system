@@ -5,15 +5,13 @@ import urllib.request
 import os.path
 from hashlib import sha256
 from flask import Flask, render_template, session, redirect, url_for, escape, request, jsonify
-import settings
 
+from settings import *
 from logic.user import User
 from logic.event import Event
 
 global hashs_for_users
 hashs_for_users = {}
-
-
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -118,6 +116,23 @@ def eventAdd():
             return render_template('eventAdd.html',username=f'{cuser.username}')
     return redirect(url_for('login'))
 
+@web.route('/eventEdit')
+def eventEdit():
+    if 'username' in session:
+        cuser = User.get_user('username', session['username'])
+        if (cuser != None):
+            return render_template('eventEdit.html',username=f'{cuser.username}')
+    return redirect(url_for('login'))
+
+@web.route('/eventDelete')
+def eventDelete():
+    if 'username' in session:
+        cuser = User.get_user('username', session['username'])
+        if (cuser != None):
+            return render_template('eventDelete.html',username=f'{cuser.username}')
+    return redirect(url_for('login'))
+
+
 @web.route('/sendtoall', methods=['GET', 'POST'])
 def sendtoall():
     if request.method == 'POST':
@@ -134,8 +149,8 @@ def sendtoall():
 ###############
 # API Methods #
 ###############
-@web.route('/UserAddStaff', methods=['GET', 'POST'])
-def UserAddStaff():
+@web.route('/api/UserAddStaff', methods=['GET', 'POST'])
+def ApiUserAddStaff():
     if request.method == 'GET':
         users = User.all_user()
         if 'username' in session:
@@ -148,8 +163,8 @@ def UserAddStaff():
                 return "ok"
     return redirect(url_for('login'))
 
-@web.route('/UserDelStaff', methods=['GET', 'POST'])
-def UserDelStaff():
+@web.route('/api/UserDelStaff', methods=['GET', 'POST'])
+def ApiUserDelStaff():
     if request.method == 'GET':
         users = User.all_user()
         if 'username' in session:
@@ -162,8 +177,8 @@ def UserDelStaff():
                 return "ok"
     return redirect(url_for('login'))
 
-@web.route('/UserDelete', methods=['GET'])
-def UserDelete():
+@web.route('/api/UserDelete', methods=['GET'])
+def ApiUserDelete():
     if request.method == 'GET':
         users = User.all_user()
         if 'username' in session:
@@ -174,30 +189,43 @@ def UserDelete():
                         user.delete_user()
     return redirect(url_for('login'))
 
-@web.route('/EventAddNew', methods=['POST'])
-def EventAddNew():
+@web.route('/api/EventAddNew', methods=['POST'])
+def ApiEventAddNew():
     if request.method == 'POST':
         users = User.all_user()
         if 'username' in session:
             cuser = User.get_user('username', session['username'])
             if (cuser != None):
-                events = Event.all_event()
-                for event in events:
-                    if (f"{event._id}" == f"{request.args.get('id')}"):
-                        event.delete_event()
+                Event.create_event(request.form['title'], request.form['description'], request.form['image'], request.form['date'], request.form['time'], request.form['descriptionshort'])
     return redirect(url_for('login'))
 
-@web.route('/EventDelete', methods=['GET'])
-def EventDelete():
+@web.route('/api/EventDelete', methods=['GET'])
+def ApiEventDelete():
     if request.method == 'GET':
         users = User.all_user()
         if 'username' in session:
             cuser = User.get_user('username', session['username'])
             if (cuser != None):
-                events = Event.all_event()
-                for event in events:
-                    if (f"{event._id}" == f"{request.args.get('id')}"):
-                        event.delete_event()
+                event =  Event.get_event('id',f"{request.args.get('id')}")
+                event.delete_event()
     return redirect(url_for('login'))
 
-web.run(debug=False, host='0.0.0.0',port=5000)
+@web.route('/api/EventEdit', methods=['GET'])
+def ApiEventEdit():
+    if request.method == 'GET':
+        users = User.all_user()
+        if 'username' in session:
+            cuser = User.get_user('username', session['username'])
+            if (cuser != None):
+                event =  Event.get_event('id',f"{request.args.get('id')}")
+                event.name
+                event.title = title
+                event.description = description
+                event.shortdescription = shortdescription
+                event.photo = photo
+                event.date = date
+                event.time = time
+
+    return redirect(url_for('login'))
+
+web.run(debug=False, host='0.0.0.0', port=5000)
