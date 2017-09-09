@@ -10,8 +10,8 @@ import urllib.request
 import os
 
 from settings import *
-from belkaBot.logic.user import User
-from belkaBot.logic.event import Event
+from logic.user import User
+from logic.event import Event
 
 
 def print_post(chatId, image, date, title, description):
@@ -53,10 +53,10 @@ bot = telebot.TeleBot(TOKEN)
 @bot.message_handler(commands=['start'])
 def start_command(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if cuser:
+    print(cuser)
+    if cuser==None:
         bot.send_message(message.from_user.id, 'Ой да бросьте, вы уже не первый раз у нас.')
         print_main_menu(message.chat.id)
-        
     else:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
         button_phone = telebot.types.KeyboardButton(text="Зарегистрироваться", request_contact=True)
@@ -83,7 +83,7 @@ def handle_text(message):
     # свои ли контакты переслал пользователь?
     if message.from_user.id == message.contact.user_id:
         # может мы его уже знаем?
-        if cuser:
+        if cuser == None:
             return
         # ну лан так и быть зарегистрируем его
         first_name = message.from_user.first_name
@@ -93,16 +93,12 @@ def handle_text(message):
         username = message.from_user.username
         cuser = User.registration(first_name, last_name, phone, chat_id, username)
         print_main_menu(cuser.chat_id)
-####
-#   main_menu
-####
-# func=lambda mess: "Ближайшие мероприятия" == mess.text,
 
 
 @bot.message_handler(content_types=['text'])
-def handle_text(message):
+def handle_text2(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if cuser:
+    if cuser==None:
         start_command(message)
         return
     if message.text == "Ближайшие мероприятия":
