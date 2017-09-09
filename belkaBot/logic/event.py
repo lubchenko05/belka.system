@@ -1,6 +1,6 @@
 import psycopg2
 import datetime
-from logic.db_controller import DbController
+from .db_controller import DbController
 #from logic.user import User
 
 
@@ -70,8 +70,8 @@ class Event:
     #         user_list = []
     #         for data in users:
     #             is_staff = 'True' is data['is_staff']
-    #             user_list.append(User(data['id'], data['first_name'], data['last_name'], data['phone'], data['chat_id'],
-    #                                   data['username'], is_staff))
+    #             user_list.append(User(data['id'], data['first_name'], data['last_name'],
+    #                              data['phone'], data['chat_id'], data['username'], is_staff))
     #         return user_list
     #     except psycopg2.Error as e:
     #         print(e)

@@ -7,19 +7,21 @@ from hashlib import sha256
 import string
 import random
 import urllib.request
+import os
 
 from settings import *
-from logic.user import User
-from logic.event import Event
+from belkaBot.logic.user import User
+from belkaBot.logic.event import Event
 
 
 def print_post(chatId, image, date, title, description):
     try:
         photo = open(image, 'rb')
     except IOError as e:
-        print (f"I/O error({e.errno}): {e.strerror}")
+        print(f"I/O error({e.errno}): {e.strerror}")
     bot.send_photo(chatId, photo, caption=f'{date} - {title}: {description}')
     bot.send_message(chatId, f"{date}<br><b>{title}</b><br>{description}", parse_mode="HTML")
+
 
 def print_post_list(chatId, image, date, title, description):
     try:
@@ -47,10 +49,11 @@ bot = telebot.TeleBot(TOKEN)
 #     print(user)
 #     main_menu(user.chat_id)
 
+
 @bot.message_handler(commands=['start'])
 def start_command(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if (cuser != None):
+    if cuser:
         bot.send_message(message.from_user.id, 'Ой да бросьте, вы уже не первый раз у нас.')
         print_main_menu(message.chat.id)
         
@@ -60,6 +63,7 @@ def start_command(message):
         user_markup.add(button_phone)
         bot.send_message(message.from_user.id, 'Вас привествуют и просят представиться.', reply_markup=user_markup)
 
+
 @bot.message_handler(commands=['help'])
 def help_command(message):
     keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
@@ -68,16 +72,18 @@ def help_command(message):
         telebot.types.InlineKeyboardButton('Message the general director', url='telegram.me/arudik'),
         telebot.types.InlineKeyboardButton('Message the event manager', url='telegram.me/gorod_d')
     )
+    help_text = open('../belkaWeb/templates/help.txt', 'r').read()
     bot.send_message(message.chat.id, help_text, reply_markup=keyboard)
+
 
 # Зарегистрироваться - пересылка контактов пользователя
 @bot.message_handler(content_types=['contact'])
 def handle_text(message):
     cuser = User.get_user('chat_id', message.from_user.id)
     # свои ли контакты переслал пользователь?
-    if (message.from_user.id == message.contact.user_id):
+    if message.from_user.id == message.contact.user_id:
         # может мы его уже знаем?
-        if (cuser != None):
+        if cuser:
             return
         # ну лан так и быть зарегистрируем его
         first_name = message.from_user.first_name
@@ -86,18 +92,20 @@ def handle_text(message):
         chat_id = message.chat.id
         username = message.from_user.username
         cuser = User.registration(first_name, last_name, phone, chat_id, username)
-        main_menu(cuser.chat_id)
+        print_main_menu(cuser.chat_id)
 ####
 #   main_menu
 ####
 # func=lambda mess: "Ближайшие мероприятия" == mess.text,
+
+
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if (cuser == None):
+    if cuser:
         start_command(message)
         return
-    if (message.text == "Ближайшие мероприятия"):
+    if message.text == "Ближайшие мероприятия":
         events = Event.all_event()
         list_of_users_event = []
         cuser_events = cuser.get_events()
@@ -113,19 +121,20 @@ def handle_text(message):
             )
             bot.send_message(message.chat.id, f"{event.date} {event.time} - {event.title}\n {event.description}",
                 disable_web_page_preview=True, reply_markup=keyboard)
-    if (message.text == "FAQ"):
+    if message.text == "FAQ":
         chatId = message.chat.id
         print_post(chatId, './testimage.jpg', '12.02.16', 'Belka Code Day', "Lorem ipsum")
         
 
-
 @bot.message_handler(func=lambda mess: "Расписание Работы" == mess.text, content_types=['text'])
 def work_schedule(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if (cuser == None):
+    if cuser:
         start_command(message)
         return
-    bot.send_message(message.chat.id, 'Расписание Работы:\nПн.-Пт. 14:30 - 22:00\nСб. 12:00 - 22:00\nМожливі перерви у роботі простору в зв\'язку з проведенням заходів.')
+    bot.send_message(message.chat.id,
+                     'Расписание Работы:\nПн.-Пт. 14:30 - 22:00\nСб. 12:00 - 22:00\nМожливі перерви у роботі простору'
+                     ' в зв\'язку з проведенням заходів.')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -133,7 +142,7 @@ def callback_inline(call):
     cuser = User.get_user('chat_id', call.message.chat.id)
     # Если сообщение из чата с ботом
     if call.message:
-        events =  Event.all_event()
+        events = Event.all_event()
 
         list_of_users_event = []
         cuser_events = cuser.get_events()
@@ -144,27 +153,31 @@ def callback_inline(call):
             is_delete_event = False
             if call.data == str(event._id):
                 for cuser_event in cuser_events:
-                    if (str(cuser_event._id) == str(event._id)): is_delete_event = True
-                if (is_delete_event) :
+                    if str(cuser_event._id) == str(event._id):
+                        is_delete_event = True
+                if is_delete_event:
                     cuser.decline_event(event._id)
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Отписан  на {event.title}")
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                          text=f"Отписан  на {event.title}")
                 else:
                     cuser.accept_event(event._id)
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Записан на {event.title}")
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                          text=f"Записан на {event.title}")
     # Если сообщение из инлайн-режима
     elif call.inline_message_id:
         if call.data == "test":
             bot.edit_message_text(inline_message_id=call.inline_message_id, text="Вы записаны")
 
+
 def telegram_polling():
     try:
-        bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
+        bot.polling(none_stop=True, timeout=60)  # constantly get messages from Telegram
     except:
         bot.stop_polling()
         time.sleep(10)
         telegram_polling()
 
-telegram_polling();
+telegram_polling()
 
 # _______********1*888888888801****__________  _______********1*888888888801****__________
 # ______*1000018111****10088888888*__________  ______*1000018111****10088888888*__________

@@ -1,6 +1,6 @@
 import psycopg2
-from logic.db_controller import DbController
-from logic.event import Event
+from .db_controller import DbController
+from .event import Event
 
 class User:
     def __init__(self, id_, first_name, last_name, phone, chat_id, username, is_staff):
@@ -64,8 +64,8 @@ class User:
     def get_events(self):
         try:
             db = DbController(table='User')
-            events = db.query(f'SELECT * from "Event" JOIN "EventToUser" ON "Event"."id" = "EventToUser"."event_id" WHERE '
-                                     f'"EventToUser"."user_id"=\'{self._id}\';')
+            events = db.query(f'SELECT * from "Event" JOIN "EventToUser" ON "Event"."id" = '
+                              f'"EventToUser"."event_id" WHERE "EventToUser"."user_id"=\'{self._id}\';')
             #print(events)
             event_list = []
             for data in events:
