@@ -1,5 +1,5 @@
 import psycopg2
-from logic.db_controller import DbController
+from .db_controller import DbController
 
 class Hashtag:
     def __init__(self, name):
