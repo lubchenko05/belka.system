@@ -121,12 +121,12 @@ def eventAdd():
     if 'username' in session:
         cuser = User.get_user('username', session['username'])
         if cuser:
-            return render_template('eventAdd.html', username=f'{cuser.username}')
+            return render_template('eventAdd.html', data={'username': f'{cuser.username}', "error": ''})
     return redirect(url_for('login'))
 
 
-@web.route('/eventEdit')
-def eventEdit():
+@web.route('/eventEdit/(PK<pk>)', methods=["GET", ])
+def eventEdit(pk):
     if 'username' in session:
         cuser = User.get_user('username', session['username'])
         if cuser:
@@ -168,7 +168,7 @@ def ApiUserAddStaff():
             cuser = User.get_user('username', session['username'])
             if cuser:
                 for user in users:
-                    if (f"{user.chat_id}" == f"{request.args.get('chat_id')}"):
+                    if f"{user.chat_id}" == f"{request.args.get('chat_id')}":
                         user.is_staff = 1
                         user.update()
                 return "ok"
@@ -210,12 +210,25 @@ def ApiEventAddNew():
         if 'username' in session:
             cuser = User.get_user('username', session['username'])
             if cuser:
-                Event.create_event(request.form['title'],
-                                   request.form['description'],
-                                   request.form['image'],
-                                   request.form['date'],
-                                   request.form['time'],
-                                   request.form['descriptionshort'])
+                if not (request.form['title']
+                        or not request.form['description']
+                        or not request.form['image']
+                        or not request.form['date']
+                        or not request.form['time']
+                        or not request.form['descriptionshort']
+                        ):
+                    # TODO: download and upload image
+                    Event.create_event(request.form['title'],
+                                       request.form['description'],
+                                       request.form['image'],
+                                       request.form['date'].replace('.', '-'),
+                                       request.form['time'],
+                                       request.form['descriptionshort'])
+                else:
+                    return render_template('eventAdd.html',
+                                           data={"username": f'{cuser.username}',
+                                                 "error": 'All field must be zapolneni blyat!'})
+
     return redirect(url_for('login'))
 
 
@@ -233,19 +246,27 @@ def ApiEventDelete():
 
 @web.route('/api/EventEdit', methods=['GET'])
 def ApiEventEdit():
-    if request.method == 'GET':
+    if request.method == 'POST':
         users = User.all_user()
         if 'username' in session:
             cuser = User.get_user('username', session['username'])
             if cuser:
-                event = Event.get_event('id',f"{request.args.get('id')}")
-                event.name = name
-                event.title = title
-                event.description = description
-                event.shortdescription = shortdescription
-                event.photo = photo
-                event.date = date
-                event.time = time
+                if not (request.form['title']
+                        or not request.form['description']
+                        or not request.form['image']
+                        or not request.form['date']
+                        or not request.form['time']
+                        or not request.form['descriptionshort']
+                        ):
+                    event = Event.get_event('id', f"{request.args.get('id')}")
+                    event.name = request.form['name']
+                    event.title = request.form['title']
+                    event.description = request.form['description']
+                    event.shortdescription = request.form['shortdescription']
+                    event.photo = request.form['image']
+                    event.date = request.form['date']
+                    event.time = request.form['time']
+                    event.update()
 
     return redirect(url_for('login'))
 

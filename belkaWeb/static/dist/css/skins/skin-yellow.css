@@ -59,7 +59,7 @@
 .skin-yellow .wrapper,
 .skin-yellow .main-sidebar,
 .skin-yellow .left-side {
-  background-color: #222d32;
+  background-color: #07077e;
 }
 .skin-yellow .user-panel > .info,
 .skin-yellow .user-panel > .info > a {
@@ -75,7 +75,7 @@
 .skin-yellow .sidebar-menu > li:hover > a,
 .skin-yellow .sidebar-menu > li.active > a {
   color: #ffffff;
-  background: #1e282c;
+  background: #03034b;
   border-left-color: #f39c12;
 }
 .skin-yellow .sidebar-menu > li > .treeview-menu {
