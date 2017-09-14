@@ -72,8 +72,8 @@ def index():
         if request.form['username']:
             cuser = User.get_user('username', f"{request.form['username']}")
             if cuser:
-                if ((hash_for_users[cuser.chat_id] == request.form['rcode']) & (hash_for_users[cuser.chat_id])
-                        & (hash_for_users[cuser.chat_id] != '')):
+                if (cuser.chat_id in hash_for_users and hash_for_users[cuser.chat_id] == request.form['rcode']
+                        and hash_for_users[cuser.chat_id]):
                     bot.send_message(chat_id=cuser.chat_id, text=f'success')
                     session['username'] = request.form['username']
                     hash_for_users[cuser.chat_id] = None
@@ -209,7 +209,7 @@ def ApiEventAddNew():
         users = User.all_user()
         if 'username' in session:
             cuser = User.get_user('username', session['username'])
-            if (cuser != None):
+            if cuser:
                 Event.create_event(request.form['title'],
                                    request.form['description'],
                                    request.form['image'],
