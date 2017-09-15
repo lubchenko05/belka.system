@@ -44,10 +44,7 @@ def print_main_menu(chatId):
 
 bot = telebot.TeleBot(TOKEN)
 
-# users = User.all_user()
-# for user in users:
-#     print(user)
-#     main_menu(user.chat_id)
+
 
 
 @bot.message_handler(commands=['start'])
@@ -121,7 +118,6 @@ def handle_text2(message):
         chatId = message.chat.id
         print_post(chatId, './testimage.jpg', '12.02.16', 'Belka Code Day', "Lorem ipsum")
         
-
 @bot.message_handler(func=lambda mess: "Расписание Работы" == mess.text, content_types=['text'])
 def work_schedule(message):
     cuser = User.get_user('chat_id', message.from_user.id)
@@ -172,6 +168,13 @@ def telegram_polling():
         bot.stop_polling()
         time.sleep(10)
         telegram_polling()
+
+
+users = User.all_user()
+for user in users:
+    print(user)
+    print_main_menu(user.chat_id)
+
 
 telegram_polling()
 
