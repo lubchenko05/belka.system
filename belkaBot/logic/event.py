@@ -1,8 +1,8 @@
 import psycopg2
 import datetime
-from .db_controller import DbController
-#from logic.user import User
 
+from .db_controller import DbController
+from belkaBot.logic import user
 
 class Event:
     def __init__(self, id_, title, description, photo, date, time, shortdescription):
@@ -63,19 +63,19 @@ class Event:
             print(e)
             return False
 
-    # def get_users(self):
-    #     try:
-    #         users = self.__db.query(f'SELECT * from User JOIN EventToUser ON User.id = EventToUser.user_id WHERE '
-    #                                 f'EventToUser.event_id={self._id};')
-    #         user_list = []
-    #         for data in users:
-    #             is_staff = 'True' is data['is_staff']
-    #             user_list.append(User(data['id'], data['first_name'], data['last_name'],
-    #                              data['phone'], data['chat_id'], data['username'], is_staff))
-    #         return user_list
-    #     except psycopg2.Error as e:
-    #         print(e)
-    #         return None
+    def get_users(self):
+        try:
+            users = self.__db.query(f'SELECT * from User JOIN EventToUser ON User.id = EventToUser.user_id WHERE '
+                                    f'EventToUser.event_id={self._id};')
+            user_list = []
+            for data in users:
+                is_staff = 'True' is data['is_staff']
+                user_list.append(user.User(data['id'], data['first_name'], data['last_name'],
+                                 data['phone'], data['chat_id'], data['username'], is_staff))
+            return user_list
+        except psycopg2.Error as e:
+            print(e)
+            return None
 
     def delete_event(self):
         try:

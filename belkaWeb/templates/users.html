@@ -69,7 +69,7 @@
                 {%- for user in users -%}
                 <tr>
                   <td>{{ user.chat_id }}</td>
-                  <td>{% if user.is_staff==1 %}<i class="fa fa-coffee"></i> {% else %}<i class="fa fa-user"></i> {% endif %}{{ user.username }}</td>
+                  <td>{% if user.is_staff==1 %}<i class="fa fa-coffee"></i> &nbsp; {% else %}<i class="fa fa-user"></i> {% endif %}{{ user.username }}</td>
                   <td>{{ user.first_name }} {{ user.last_name }}</td>
                   <td>{{ user.phone }}</td>
                   <td>
