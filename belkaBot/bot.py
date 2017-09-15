@@ -29,50 +29,40 @@ def print_event_week_list(chat_id):
             keyboard.add(telebot.types.InlineKeyboardButton("Подробнее...", callback_data=f"show\t{event._id}"))
             bot.send_message(chat_id, f"{event.date} {event.time} - <b>{event.title}</b>\n{event.shortdescription}", parse_mode="HTML", disable_web_page_preview=True, reply_markup=keyboard)
 
-def print_post(chatId, image, date, title, description):
-    # if image:
-        #try:
-        #    photo = open(image, 'rb')
-        #except IOError as e:
-        #    print(f"I/O error({e.errno}): {e.strerror}")
-        #bot.send_photo(chatId, photo, caption=f'{date} - {title}: {description}')
-    bot.send_message(chatId, f"{date}\n<b>{title}</b>\n{description}", parse_mode="HTML")
 
-def print_post_list(chat_id):
+def print_event_week_list(chat_id):
+    user = User.get_user('chat_id', chat_id)
+    events = Event.all_event()
+    curent_date = datetime.now()
+    delta_data = timedelta(days=7)
+    for event in events:
+        event_date = datetime.strptime(f"{event.date} {event.time}", "%Y-%m-%d %H:%M:%S" )
+        if event_date > curent_date and event_date < (curent_date + delta_data):
+            keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+            keyboard.add(telebot.types.InlineKeyboardButton("Подробнее...", callback_data=f"show\t{event._id}"))
+            bot.send_message(chat_id, f"{event.date} {event.time} - <b>{event.title}</b>\n{event.shortdescription}", parse_mode="HTML", disable_web_page_preview=True, reply_markup=keyboard)
+
+
+
+def print_post(chat_id, event_id, image, date, title, description):
     user = User.get_user('chat_id', chat_id)
     events_all = Event.all_event()
     events_user = []
     cuser_events = user.get_events()
     for cuser_event in cuser_events:
         events_user.append(cuser_event._id)
-    for event in events_all:
-        text = 'Записаться'
-        keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
-        if event._id in events_user:
-            text = 'Отписаться'
-        keyboard.add(
-            telebot.types.InlineKeyboardButton(text, callback_data=f"{event._id}")
-        )
-        bot.send_message(chat_id, f"{event.date} {event.time} - {event.title}\n {event.description}",
-            disable_web_page_preview=True, reply_markup=keyboard)
-
-def print_user_events_list(chat_id):
-    user = User.get_user('chat_id', chat_id)
-    events_user = []
-    cuser_events = user.get_events()
-    for cuser_event in cuser_events:
-        events_user.append(cuser_event._id)
-    for event in events_all:
-        text = 'Записаться'
-        keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
-        if event._id in events_user:
-            text = 'Отписаться'
-        keyboard.add(
-            telebot.types.InlineKeyboardButton(text, callback_data=f"{event._id}")
-        )
-        bot.send_message(chat_id, f"{event.date} {event.time} - {event.title}\n {event.description}",
-            disable_web_page_preview=True, reply_markup=keyboard)
-
+    text = 'Записаться'
+    if event_id in events_user:
+        text = 'Отписаться'
+    keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+    keyboard.add(telebot.types.InlineKeyboardButton(text, callback_data=f"change_event_status\t{event_id}"))
+    # if image:
+        #try:
+        #    photo = open(image, 'rb')
+        #except IOError as e:
+        #    print(f"I/O error({e.errno}): {e.strerror}")
+        #bot.send_photo(chat_id, photo, caption=f'{date} - {title}: {description}') 
+    bot.send_message(chat_id, f"{date}\n<b>{title}</b>\n{description}", parse_mode="HTML", disable_web_page_preview=True, reply_markup=keyboard)
 
 def print_main_menu(chatId):
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
@@ -87,9 +77,7 @@ def print_main_menu(chatId):
 
 @bot.message_handler(commands=['start'])
 def start_command(message):
-
     cuser = User.get_user('chat_id', message.from_user.id)
-    print(cuser)
     if cuser==None:
         bot.send_message(message.from_user.id, 'Ой да бросьте, вы уже не первый раз у нас.')
         print_main_menu(message.chat.id)
@@ -138,7 +126,7 @@ def handle_text2(message):
         start_command(message)
         return
     if str(message.text) == "Ближайшие мероприятия":
-        print_post_list(message.chat.id)
+        print_event_week_list(message.chat.id)
     if str(message.text) == "Как там Белка?":
         bot.send_message(message.chat.id, f"Нормально, живая)")
     if str(message.text) == "Мои мероприятия":
@@ -161,31 +149,50 @@ def callback_inline(call):
     cuser = User.get_user('chat_id', call.message.chat.id)
     # Если сообщение из чата с ботом
     if call.message:
+        print(call.data)
         action = (call.data).split()[0]
         event_id = (call.data).split()[1]
         if action == "show":
             event = Event.get_event('id',f'{event_id}')
-            print_post(call.message.chat.id, event.photo, event.date, event.title, event.description)
+            print_post(call.message.chat.id, event._id, event.photo, event.date, event.title, event.description)
+#            events_all = Event.all_event()
+#            events_user = []
+#            cuser_events = cuser.get_events()
+#            for cuser_event in cuser_events:
+#                events_user.append(cuser_event._id)
+#            text = 'Записаться'
+#            if event_id in events_user:
+#                text = 'Отписаться'
+#            keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+#            keyboard.add(telebot.types.InlineKeyboardButton(text, callback_data=f"change_event_status\t{event_id}")) 
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=call.message.text)
             return
-        list_of_users_event = []
-        cuser_events = cuser.get_events()
-        for cuser_event in cuser_events:
-            list_of_users_event.append(cuser_event._id)
+        if action == "change_event_status":
+            event = Event.get_event('id',f'{event_id}')
+            events = Event.all_event()
+            list_of_users_event = []
+            cuser_events = cuser.get_events()
+            for cuser_event in cuser_events:
+                list_of_users_event.append(cuser_event._id)
+            for event in events:
+                is_delete_event = False
+                if event_id == str(event._id):
+                    for cuser_event in cuser_events:
+                        if str(cuser_event._id) == str(event._id):
+                            is_delete_event = True
+                    if is_delete_event:
+                        cuser.decline_event(event._id)
+                        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            text=call.message.text+"\nВы отписаны")
+                    else:
+                        cuser.accept_event(event._id)
+                        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            text=call.message.text+"\nВы записаны")
+            #print_post(call.message.chat.id, event._id, event.photo, event.date, event.title, event.description)
+            return
 
-        for event in events:
-            is_delete_event = False
-            if call.data == str(event._id):
-                for cuser_event in cuser_events:
-                    if str(cuser_event._id) == str(event._id):
-                        is_delete_event = True
-                if is_delete_event:
-                    cuser.decline_event(event._id)
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                          text=f"Отписан  на {event.title}")
-                else:
-                    cuser.accept_event(event._id)
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                          text=f"Записан на {event.title}")
+
+        
     # Если сообщение из инлайн-режима
     elif call.inline_message_id:
         if call.data == "test":
