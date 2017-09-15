@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
 import telebot
-import codecs
 import time
-import threading
-from hashlib import sha256
-import string
-import random
-import urllib.request
-import os
 
 from settings import *
-from logic.user import User
-from logic.event import Event
+from belkaBot.logic.user import User
+from belkaBot.logic.event import Event
 
 
 def print_post(chatId, image, date, title, description):
@@ -54,7 +47,7 @@ bot = telebot.TeleBot(TOKEN)
 def start_command(message):
     cuser = User.get_user('chat_id', message.from_user.id)
     print(cuser)
-    if cuser==None:
+    if not cuser:
         bot.send_message(message.from_user.id, 'Ой да бросьте, вы уже не первый раз у нас.')
         print_main_menu(message.chat.id)
     else:
@@ -83,7 +76,7 @@ def handle_text(message):
     # свои ли контакты переслал пользователь?
     if message.from_user.id == message.contact.user_id:
         # может мы его уже знаем?
-        if cuser == None:
+        if not cuser:
             return
         # ну лан так и быть зарегистрируем его
         first_name = message.from_user.first_name
@@ -98,7 +91,7 @@ def handle_text(message):
 @bot.message_handler(content_types=['text'])
 def handle_text2(message):
     cuser = User.get_user('chat_id', message.from_user.id)
-    if cuser==None:
+    if not cuser:
         start_command(message)
         return
     if message.text == "Ближайшие мероприятия":
@@ -111,12 +104,13 @@ def handle_text2(message):
             text = 'Записаться'
             keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
             for cuser_event_id in list_of_users_event:
-                if (str(cuser_event_id) == str(event._id)): text = 'Отписаться'
+                if str(cuser_event_id) == str(event._id):
+                    text = 'Отписаться'
             keyboard.add(
                 telebot.types.InlineKeyboardButton(text, callback_data=f"{event._id}")
             )
             bot.send_message(message.chat.id, f"{event.date} {event.time} - {event.title}\n {event.description}",
-                disable_web_page_preview=True, reply_markup=keyboard)
+                             disable_web_page_preview=True, reply_markup=keyboard)
     if message.text == "FAQ":
         chatId = message.chat.id
         print_post(chatId, './testimage.jpg', '12.02.16', 'Belka Code Day', "Lorem ipsum")
