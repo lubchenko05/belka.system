@@ -29,10 +29,10 @@ def print_event_week_list(chat_id):
             keyboard.add(telebot.types.InlineKeyboardButton("Подробнее...", callback_data=f"show\t{event._id}"))
             bot.send_message(chat_id, f"{event.date} {event.time} - <b>{event.title}</b>\n{event.shortdescription}", parse_mode="HTML", disable_web_page_preview=True, reply_markup=keyboard)
 
-
-def print_event_week_list(chat_id):
+def print_event_week_list_for_me(chat_id):
     user = User.get_user('chat_id', chat_id)
     events = Event.all_event()
+    events = user.get_events()
     curent_date = datetime.now()
     delta_data = timedelta(days=7)
     for event in events:
@@ -41,8 +41,6 @@ def print_event_week_list(chat_id):
             keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
             keyboard.add(telebot.types.InlineKeyboardButton("Подробнее...", callback_data=f"show\t{event._id}"))
             bot.send_message(chat_id, f"{event.date} {event.time} - <b>{event.title}</b>\n{event.shortdescription}", parse_mode="HTML", disable_web_page_preview=True, reply_markup=keyboard)
-
-
 
 def print_post(chat_id, event_id, image, date, title, description):
     user = User.get_user('chat_id', chat_id)
@@ -130,10 +128,10 @@ def handle_text2(message):
     if str(message.text) == "Как там Белка?":
         bot.send_message(message.chat.id, f"Нормально, живая)")
     if str(message.text) == "Мои мероприятия":
-        print("Мои")
-    if str(message.text) == "FAQ":
         chatId = message.chat.id
-        print_event_week_list(chatId)
+        print_event_week_list_for_me(chatId)
+    if str(message.text) == "FAQ":
+        print("faq")
         #print_post(chatId, './testimage.jpg', '12.02.16', 'Belka Code Day', "Lorem ipsum")
         
 @bot.message_handler(func=lambda mess: "Расписание Работы" == mess.text, content_types=['text'])
