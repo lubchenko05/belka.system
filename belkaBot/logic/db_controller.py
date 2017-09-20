@@ -78,7 +78,10 @@ class DbController:
         with psycopg2.connect(f"dbname='{self.db}' user='{self.username}' host='{self.host}' port='{self.port}' password='{self.password}'") as conn:
             cur = conn.cursor()
             cur.execute(request)
-            result = cur.fetchall()
+            try:
+                result = cur.fetchall()
+            except:
+                result = None
             conn.commit()
         conn.close()
         return result

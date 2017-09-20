@@ -66,10 +66,9 @@ class User:
             db = DbController(table='User')
             events = db.query(f'SELECT * from "Event" JOIN "EventToUser" ON "Event"."id" = '
                               f'"EventToUser"."event_id" WHERE "EventToUser"."user_id"=\'{self._id}\';')
-            #print(events)
             event_list = []
             for data in events:
-                event_list.append(Event(data[0], data[1], data[2], data[3], data[4], data[5]))
+                event_list.append(Event(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
             return event_list
         except psycopg2.Error as e:
             print(e)
@@ -87,7 +86,7 @@ class User:
     def decline_event(self, event_id):
         db = DbController(table='EventToUser')
         try:
-            db.query(f'DELETE FROM {db.table} WHERE event_id=\'{event_id}\' and user_id = \'{self._id}\';')
+            db.query(f'DELETE FROM "{db.table}" WHERE event_id = {event_id} and user_id = {self._id};')
             return True
         except psycopg2.Error as e:
             print(e)

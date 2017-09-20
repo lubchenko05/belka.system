@@ -2,7 +2,7 @@ import psycopg2
 import datetime
 
 from .db_controller import DbController
-from belkaBot.logic import user
+from logic import user
 
 class Event:
     def __init__(self, id_, title, description, photo, date, time, shortdescription):
